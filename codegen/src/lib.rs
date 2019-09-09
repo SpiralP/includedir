@@ -67,7 +67,6 @@ impl IncludeDir {
     /// This function panics when CARGO_MANIFEST_DIR or OUT_DIR are not defined.
     pub fn add_file<P: AsRef<Path>>(&mut self, path: P, comp: Compression) -> io::Result<()> {
         let key = path.as_ref().to_string_lossy();
-        println!("cargo:rerun-if-changed={}", path.as_ref().display());
 
         match comp {
             Compression::None => {
