@@ -1,5 +1,4 @@
-includedir
-===========
+# includedir
 
 [![Travis](https://img.shields.io/travis/tilpner/includedir.svg?style=flat-square)](https://travis-ci.org/tilpner/includedir)
 [![Appveyor](https://img.shields.io/appveyor/ci/tilpner/includedir.svg?label=appveyor&style=flat-square)](https://ci.appveyor.com/project/tilpner/includedir)
@@ -11,15 +10,16 @@ Include a directory in your Rust binary, e.g. static files for your web server o
 
 ## Features
 
-* [x] Automatically compile data into binary
-* [x] Use [rust-phf](https://github.com/sfackler/rust-phf) for efficient lookup
-* [x] Wrapping API around the phf map, to abstract away additional features
-* [x] Compression, with optional crate "flate2"
-* [x] Reading from source files for debug builds
+- [x] Automatically compile data into binary
+- [x] Use [rust-phf](https://github.com/sfackler/rust-phf) for efficient lookup
+- [x] Wrapping API around the phf map, to abstract away additional features
+- [x] Compression, with optional crate "flate2"
+- [x] Reading from source files for debug builds
 
 ## Example
 
 **Cargo.toml**
+
 ```toml
 [package]
 name = "example"
@@ -39,8 +39,6 @@ includedir_codegen = "0.5.0"
 **build.rs**
 
 ```rust
-extern crate includedir_codegen;
-
 use includedir_codegen::Compression;
 
 fn main() {
@@ -54,16 +52,11 @@ fn main() {
 **src/main.rs**
 
 ```rust
-extern crate includedir;
-extern crate phf;
-
 use std::env;
 
 include!(concat!(env!("OUT_DIR"), "/data.rs"));
 
 fn main() {
-    FILES.set_passthrough(env::var_os("PASSTHROUGH").is_some());
-
     println!("{:?}", FILES.get("data/foo"))
 }
 ```

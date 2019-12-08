@@ -90,10 +90,8 @@ impl IncludeDir {
 
                 io::copy(&mut in_file, &mut encoder)?;
 
-                self.files.insert(
-                    as_key(key.borrow()).into_owned(),
-                    (comp, out_path.to_owned()),
-                );
+                self.files
+                    .insert(as_key(key.borrow()).into_owned(), (comp, out_path));
             }
         }
         Ok(())
@@ -127,34 +125,27 @@ impl IncludeDir {
 
         write!(
             &mut out_file,
-            "pub static {}: ::includedir::Files = ::includedir::Files {{\n\
-             files:  ",
+            "pub static {}: ::includedir::Files = ::includedir::Files::new(",
             self.name
         )?;
 
-        let mut map: phf_codegen::Map<String> = phf_codegen::Map::new();
+        let mut map = phf_codegen::Map::new();
 
-        for (name, (compression, path)) in self.files {
+        for (name, (compression, path)) in &self.files {
             let include_path = format!("{}", self.manifest_dir.join(path).display());
 
             map.entry(
-                as_key(&name).into_owned(),
+                name.as_str(),
                 &format!(
-                    "(::includedir::Compression::{}, \
-                     include_bytes!(\"{}\") as &'static [u8])",
+                    "(::includedir::Compression::{}, include_bytes!(\"{}\"))",
                     compression,
                     as_key(&include_path)
                 ),
             );
         }
 
-        map.build(&mut out_file)?;
+        writeln!(&mut out_file, "{});", map.build())?;
 
-        write!(
-            &mut out_file,
-            ", passthrough: ::std::sync::atomic::AtomicBool::new(false)"
-        )?;
-        write!(&mut out_file, "\n}};\n")?;
         Ok(())
     }
 }
